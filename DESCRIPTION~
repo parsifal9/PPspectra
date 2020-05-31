@@ -1,0 +1,17 @@
+Package: PPsectra
+Title: energy specrtra and coherence for point processes
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Robert",
+           family = "Dunne",
+           role = c("aut", "cre"),
+           email = "rob.dunne@csiro.au",
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+Description: Calculates the energy spectra using the multitapered fft. Based on several functions from the "chronux" matlab library.
+License: GPL-2
+Encoding: UTF-8
+LazyData: true
+Imports:
+       multitaper,
+       pracma
+RoxygenNote: 7.1.0
