@@ -19,9 +19,6 @@ mtspectrumpt<-function(PP, Fs  =   3000,err  =  c(2, 0.0500),fpass  =  c(0, 1500
         tapers$v = tapers$v*sqrt(Fs)
     }
     
-    
-    
-    
     #[J,Msp,Nsp]=mtfftpt(data,tapers,nfft,t,f,findx); % mt fft for point process times
     C <-1
     K <-dim(tapers$v)[2]
@@ -40,12 +37,6 @@ mtspectrumpt<-function(PP, Fs  =   3000,err  =  c(2, 0.0500),fpass  =  c(0, 1500
     dim(H) #[1] ] 2827   99
     H <- H[findx,] #; % restrict fft of tapers to required frequencies
     # 2049   99
-    range(Re(H)) #[1] -12794.69  13941.37
-    range(Im(H)) #[1] -12013.123   9912.879
-    
-    plot(H[,1],col="blue",pch=16,xlim=c(-5500,  4500),ylim=c( -4000 , 4000))
-    points(H[,2],col="red",pch=16)
-    points(H[,3],col="green",pch=16)
     
     #H=fft(tapers,nfft,1);  % fft of tapers
     w <- 2*pi*f    #; % angular frequencies at which ft is to be evaluated
@@ -60,7 +51,6 @@ mtspectrumpt<-function(PP, Fs  =   3000,err  =  c(2, 0.0500),fpass  =  c(0, 1500
     Nsp[ch] <- length(dtmp)
     Msp[ch]  <- Nsp[ch]/length(t);
     
-    #data_proj <- interp1(t,tapers$v,dtmp)
     data_proj <-apply(tapers$v,2,fm<-function(x){pracma::interp1(t,x,dtmp) })
     
     aa<-outer(w,(dtmp-t[1]))
