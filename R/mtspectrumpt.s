@@ -12,21 +12,21 @@ mtspectrumpt<-function(PP, Fs  =   3000,err  =  c(2, 0.0500),fpass  =  c(0, 1500
     f<-aa$f
     findx<-aa$findx
     
-    #tapers=dpsschk(tapers,N,Fs); % check tapers 
-    sz<- dim( tt)
-    if (sz[1]==1 && sz[2]==2){
-        tapers <-multitaper::dpss(N,tt[2],tt[1])
-        tapers$v = tapers$v*sqrt(Fs)
-    }
+    tapers <- dpsschk(tapers,N,Fs) #check tapers 
+#    sz<- dim( tt)
+#    if (sz[1]==1 && sz[2]==2){
+#        tapers <-multitaper::dpss(N,tt[2],tt[1])
+#        tapers$v = tapers$v*sqrt(Fs)
+#    }
     
     #[J,Msp,Nsp]=mtfftpt(data,tapers,nfft,t,f,findx); % mt fft for point process times
     C <-1
-    K <-dim(tapers$v)[2]
+    K <-dim(tapers)[2]
     nfreq <- length(f); #% number of frequencies
     
     #H<-apply(tapers$v,2,fft)
     temp<-matrix(0, 1269,99)
-    H<-apply(rbind(tapers$v,temp),2,fft)
+    H<-apply(rbind(tapers,temp),2,fft)
     
     
     # dim(A) 10 20  -- apply(A,1,sum) means sum the rows. apply(A,2,sum) means sum the columns
@@ -51,7 +51,7 @@ mtspectrumpt<-function(PP, Fs  =   3000,err  =  c(2, 0.0500),fpass  =  c(0, 1500
     Nsp[ch] <- length(dtmp)
     Msp[ch]  <- Nsp[ch]/length(t);
     
-    data_proj <-apply(tapers$v,2,fm<-function(x){pracma::interp1(t,x,dtmp) })
+    data_proj <-apply(tapers,2,fm<-function(x){pracma::interp1(t,x,dtmp) })
     
     aa<-outer(w,(dtmp-t[1]))
     exponential <- exp(-1i*aa)
