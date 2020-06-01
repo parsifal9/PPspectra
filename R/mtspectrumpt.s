@@ -19,42 +19,46 @@ mtspectrumpt<-function(PP, Fs  =   3000,err  =  c(2, 0.0500),fpass  =  c(0, 1500
 #        tapers$v = tapers$v*sqrt(Fs)
 #    }
     
-    #[J,Msp,Nsp]=mtfftpt(data,tapers,nfft,t,f,findx); % mt fft for point process times
-    C <-1
-    K <-dim(tapers)[2]
-    nfreq <- length(f); #% number of frequencies
+    temp <-mtfftpt(PP,tapers,nfft,t,f,findx)  #; % mt fft for point process times
     
-    #H<-apply(tapers$v,2,fft)
-    temp<-matrix(0, 1269,99)
-    H<-apply(rbind(tapers,temp),2,fft)
+    ## C <-1
+    ## K <-dim(tapers)[2]
+    ## nfreq <- length(f); #% number of frequencies
     
-    
-    # dim(A) 10 20  -- apply(A,1,sum) means sum the rows. apply(A,2,sum) means sum the columns
-    # However in matlab  fft(A,n,1) means apply fft along the first dimension i.e. to the columns. 
+    ## #H<-apply(tapers$v,2,fft)
+    ## temp<-matrix(0, 1269,99)
+    ## H<-apply(rbind(tapers,temp),2,fft)
     
     
-    #H <- fft(tapers$v) #% fft of tapers  fft(X,n,1); length of X is less than n, then X is padded with trailing zeros to length n.
-    dim(H) #[1] ] 2827   99
-    H <- H[findx,] #; % restrict fft of tapers to required frequencies
-    # 2049   99
+    ## # dim(A) 10 20  -- apply(A,1,sum) means sum the rows. apply(A,2,sum) means sum the columns
+    ## # However in matlab  fft(A,n,1) means apply fft along the first dimension i.e. to the columns. 
     
-    #H=fft(tapers,nfft,1);  % fft of tapers
-    w <- 2*pi*f    #; % angular frequencies at which ft is to be evaluated
-    sp <- 0
-    Msp<- 0
-    Nsp<- 0
-    ch <- 1
-    dtmp <- S1
     
-    indx <- which(dtmp>=min(t) & dtmp<=max(t))
-    dtmp <- dtmp[indx]
-    Nsp[ch] <- length(dtmp)
-    Msp[ch]  <- Nsp[ch]/length(t);
+    ## #H <- fft(tapers$v) #% fft of tapers  fft(X,n,1); length of X is less than n, then X is padded with trailing zeros to length n.
+    ## dim(H) #[1] ] 2827   99
+    ## H <- H[findx,] #; % restrict fft of tapers to required frequencies
+    ## # 2049   99
     
-    data_proj <-apply(tapers,2,fm<-function(x){pracma::interp1(t,x,dtmp) })
+    ## #H=fft(tapers,nfft,1);  % fft of tapers
+    ## w <- 2*pi*f    #; % angular frequencies at which ft is to be evaluated
+    ## sp <- 0
+    ## Msp<- 0
+    ## Nsp<- 0
+    ## ch <- 1
+    ## dtmp <- S1
     
-    aa<-outer(w,(dtmp-t[1]))
-    exponential <- exp(-1i*aa)
-    J <- exponential %*%data_proj-H*Msp[ch]
+    ## indx <- which(dtmp>=min(t) & dtmp<=max(t))
+    ## dtmp <- dtmp[indx]
+    ## Nsp[ch] <- length(dtmp)
+    ## Msp[ch]  <- Nsp[ch]/length(t);
+    
+    ## data_proj <-apply(tapers,2,fm<-function(x){pracma::interp1(t,x,dtmp) })
+    
+    ## aa<-outer(w,(dtmp-t[1]))
+    ## exponential <- exp(-1i*aa)
+    ## J <- exponential %*%data_proj-H*Msp[ch]
+
+    J<-temp$J 
     S<-apply(Conj(J)*J,1,mean)
+    Re(S)
 }

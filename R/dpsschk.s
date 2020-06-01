@@ -12,7 +12,7 @@ dpsschk <-function(tapers,N,Fs){
 
     sz<- dim(tapers)
     if (sz[1]==1 && sz[2]==2){
-        tapers <-dpss(N,tt[2],tt[1])
+        tapers <-multitaper::dpss(N,tapers[2],tapers[1])
         tapers$v = tapers$v*sqrt(Fs)
     }
     tapers$v
