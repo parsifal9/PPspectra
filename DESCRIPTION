@@ -1,5 +1,5 @@
 Package: PPspectra
-Title: energy specrtra and coherence for point processes
+Title: energy spectra and coherence for point processes
 Version: 0.0.0.9000
 Authors@R: 
     person(given = "Robert",
