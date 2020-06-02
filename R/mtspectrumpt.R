@@ -1,3 +1,18 @@
+#'  multi-taperd spectrum of data preseted as spike locations
+#'
+#' multi-taperd spectrum of data preseted as spike locations
+#'
+#' @param PP the data
+#' @param Fs sampling frequency
+#' @param err sampling frequency
+#' @param fpass sampling frequency
+#' @param pad sampling frequency
+#' @param tapers sampling frequency
+#' @param fscorr sampling frequency
+#'
+#' @return S   
+#' 
+#' @export
 mtspectrumpt<-function(PP, Fs  =   3000,err  =  c(2, 0.0500),fpass  =  c(0, 1500),
                        pad  =  0,tt =  matrix(c(50, 99),1,2),tapers=matrix(c(50, 99),1,2),fscorr =  0){
     mintime <- min(PP)
