@@ -20,7 +20,7 @@ mtfftpt <- function(data,tapers,nfft,t,f,findx){
     
     #H<-apply(tapers$v,2,fft)
     #pad the tapers matrix with zeros. Could be fragile. needs error checking
-    temp<-matrix(0, nfft-dim(tapers$v)[1],dim(tapers$v)[2])
+    temp<-matrix(0, nfft-dim(tapers)[1],dim(tapers)[2])
     H<-apply(rbind(tapers,temp),2,fft)
     
     
