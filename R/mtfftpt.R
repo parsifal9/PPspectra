@@ -1,4 +1,4 @@
-#'  Multi-taper fourier transform for point process given as times
+ #'  Multi-taper fourier transform for point process given as times
 #'
 #' Multi-taper fourier transform for point process given as times
 #'
@@ -19,7 +19,8 @@ mtfftpt <- function(data,tapers,nfft,t,f,findx){
     nfreq <- length(f); #% number of frequencies
     
     #H<-apply(tapers$v,2,fft)
-    temp<-matrix(0, 1269,99)
+    #pad the tapers matrix with zeros. Could be fragile. needs error checking
+    temp<-matrix(0, nfft-dim(tapers$v)[1],dim(tapers$v)[2])
     H<-apply(rbind(tapers,temp),2,fft)
     
     
