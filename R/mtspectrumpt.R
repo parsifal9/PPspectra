@@ -13,8 +13,7 @@
 #' @return S   
 #' 
 #' @export
-mtspectrumpt<-function(PP, Fs  =   3000,err  =  c(2, 0.0500),fpass  =  c(0, 1500),
-                       pad  =  0,tt =  matrix(c(50, 99),1,2),tapers=matrix(c(50, 99),1,2),fscorr =  0){
+mtspectrumpt<-function(PP, Fs  =   3000,err  =  c(2, 0.0500),fpass  =  c(0, 1500),pad  =  0,nw=50 ,k= 2*nw-1,fscorr =  0){
     mintime <- min(PP)
     maxtime <- max(PP)
     dt <- 1/Fs #% sampling time
@@ -27,12 +26,7 @@ mtspectrumpt<-function(PP, Fs  =   3000,err  =  c(2, 0.0500),fpass  =  c(0, 1500
     f<-aa$f
     findx<-aa$findx
     
-    tapers <- dpsschk(tapers,N,Fs) #check tapers 
-#    sz<- dim( tt)
-#    if (sz[1]==1 && sz[2]==2){
-#        tapers <-multitaper::dpss(N,tt[2],tt[1])
-#        tapers$v = tapers$v*sqrt(Fs)
-#    }
+    tapers <- dpsschk(N,k,nw, Fs)
     
     temp <-mtfftpt(PP,tapers,nfft,t,f,findx)  #; % mt fft for point process times
     

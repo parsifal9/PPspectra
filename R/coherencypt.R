@@ -13,7 +13,7 @@
 #' 
 #' @export
 coherencypt<-function(data1,data2,Fs  =   3000,err  =  c(2, 0.0500),fpass  =  c(0, 1500),
-                      pad  =  0,tt =  matrix(c(50, 99),1,2),tapers=matrix(c(50, 99),1,2),fscorr =  0){
+                      pad  =  0,nw=50 ,k= 2*nw-1,fscorr =  0){
     mintime1 <- min(data1)
     maxtime1 <- max(data1)
     mintime2 <- min(data1)
@@ -29,7 +29,7 @@ coherencypt<-function(data1,data2,Fs  =   3000,err  =  c(2, 0.0500),fpass  =  c(
     f<-aa$f
     findx<-aa$findx
 
-    tapers <- dpsschk(tapers,N,Fs) #check tapers
+    tapers <- dpsschk(N,k,nw, Fs) #check tapers
     temp1 <-mtfftpt(data1,tapers,nfft,t,f,findx)  #; % mt fft for point process times
     temp2 <-mtfftpt(data2,tapers,nfft,t,f,findx)  #; % mt fft for point process times
     J1<-temp1$J 

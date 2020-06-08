@@ -2,17 +2,15 @@
 #'
 #' Called by spectral estimation routines to generate the tapers
 #'
-#' @param tapers  NW K - time-bandwidth product, number of tapers
 #' @param N (number of samples
+#' @param K - number of tapers, often 2*nw for  spectrum estimation purposes.
+#' @param NW - A positive double-precision number, the time-bandwidth parameter
 #' @param Fs sampling frequency
 #' @return tapers   
 #' 
 #' @export
-dpsschk <-function(tapers,N,Fs){
-    sz<- dim(tapers)
-    if (sz[1]==1 && sz[2]==2){
-        tapers <-multitaper::dpss(N,tapers[2],tapers[1])
-        tapers$v = tapers$v*sqrt(Fs)
-    }
+dpsschk <-function(N,k,nw, Fs){
+    tapers <-multitaper::dpss(N,k,nw)
+    tapers$v = tapers$v*sqrt(Fs)
     tapers$v
 }
