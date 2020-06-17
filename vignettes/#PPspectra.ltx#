@@ -1,0 +1,247 @@
+% \VignetteIndexEntry{PPspectra}
+% \VignetteEngine{R.rsp::tex}
+% \VignetteKeyword{R}
+% \VignetteKeyword{package}
+% \VignetteKeyword{vignette}
+% \VignetteKeyword{LaTeX}
+\documentclass[11pt]{article}
+
+\usepackage{geometry}
+ \geometry{
+ a4paper,
+% total={210mm,297mm}
+% }
+ left=17mm,
+ right=23mm,
+ top=20mm, 
+ bottom=20mm,
+ }
+
+\usepackage{url}
+\usepackage{rotating}
+\usepackage{natbib}
+\usepackage{placeins}
+\usepackage{longtable}
+\usepackage[latin1]{inputenc}
+\usepackage{multirow}
+\usepackage{hyperref}
+%\usepackage{showframe}
+\usepackage{pdflscape}
+%\usepackage{pbox}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{rotating}
+\usepackage{multicol}
+\usepackage{caption}
+\usepackage{verbatim}
+
+
+
+\usepackage{pdflscape}
+
+\usepackage{listings}
+
+\lstset{
+  basicstyle=\ttfamily, 
+  basewidth=0.5em,                 %the default setting of listings with "fixed columns" has a space 0.6em wide, 
+                                   %while the characters in Computer Modern Typewriter are 0.5em wide.
+                                   %http://tex.stackexchange.com/questions/179071/spacing-looks-wrong-in-listings-when-using-fixed-columns
+  backgroundcolor=\color{gray!10},
+  keywordstyle=\color{green!40!black},
+  columns=fixed,
+  language=R,                     % the language of the code
+  basicstyle=\footnotesize,       % the size of the fonts that are used for the code
+  numbers=left,                   % where to put the line-numbers
+  numberstyle=\tiny\color{gray},  % the style that is used for the line-numbers
+  stepnumber=1,                   % the step between two line-numbers. If it's 1, each line
+                                  % will be numbered
+  numbersep=5pt,                  % how far the line-numbers are from the code
+  showspaces=false,               % show spaces adding particular underscores
+  showstringspaces=false,         % underline spaces within strings
+  showtabs=false,                 % show tabs within strings adding particular underscores
+  frame=single,                   % adds a frame around the code
+  rulecolor=\color{black},        % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. commens (green here))
+  tabsize=2,                      % sets default tabsize to 2 spaces
+  captionpos=b,                   % sets the caption-position to bottom
+  breaklines=true,                % sets automatic line breaking
+  breakatwhitespace=false,        % sets if automatic breaks should only happen at whitespace
+  title=\lstname,                 % show the filename of files included with \lstinputlisting;
+                                  % also try caption instead of title
+  keywordstyle=\color{blue},      % keyword style
+  commentstyle=\color{green},   % comment style
+  stringstyle=\color{red},      % string literal style
+  escapeinside={\%*}{*)},         % if you want to add a comment within your code
+  morekeywords={*,...}            % if you want to add more keywords to the set
+} 
+
+\usepackage{graphicx}
+\usepackage{gensymb}
+\usepackage{nag}   %It warns the user about the usage of old packages or commands (for example, using \it, \tt, etc.)
+\usepackage{fixltx2e}
+%fixltx2e package. It fixes some 'mistakes' in Latex. From the description:
+%        ensure one-column floats don't get ahead of two-column floats;
+%        correct page headers in twocolumn documents;
+%        stop spaces disappearing in moving arguments;
+%        allowing \fnysmbol to use text symbols;
+%        allow the first word after a float to hyphenate;
+%        \emph can produce caps/small caps text;
+\usepackage{booktabs}
+% \centering instead of \begin{center} \end{center} to center things inside tables/figures etc. \centering doesn't add any additional vertical space.
+\usepackage{microtype}  %for small-scale typographic enhancements (character protrusion, font expansion, letter-spacing).
+\usepackage{fancyvrb}   %get precise control in verbatim listings.
+%\usepackage{siunitx} To typeset units
+\usepackage{numprint} %format numbers nicely 
+%~, the non-breakable space.
+
+\parindent=0pt
+\parskip=8pt
+\setlength\itemsep{0em}
+
+%\sloppy
+%\SweaveOpts{echo=FALSE,prefix.string=script18/plot}
+\renewcommand{\textfraction}{0.0}
+
+\let\oldmarginpar\marginpar
+\renewcommand\marginpar[1]{\-\oldmarginpar[\raggedleft\footnotesize #1]%
+{\raggedright\footnotesize #1}}
+
+\newcommand{\supp}{\mathop{\mathrm{supp}}}
+
+
+\newsavebox\ltmcbox
+
+\title{Energy Spectra and Coherence for Point Processes}
+\author{}
+\date{Tuesday, June 16, 2020}
+
+
+\begin{document}
+%\setkeys{Gin}{width=8cm}
+\setkeys{Gin}{height=8cm,width=0.9\columnwidth}
+\maketitle
+\tableofcontents
+\section{Introduction}
+We could find no package in R that explicitly offered the calculation of an energy spectra for a point process.  However
+the Chronux Matlab package offered this. We have taken a small number of functions and recoded them in R. We have kept
+the same names ( \texttt{mtspectrumpt} and \texttt{coherencypt}) for uses familiar with Chronux, but the calling
+parameters may have changed slightly.
+
+  
+\section{point processes}
+A time series $Y$ is a wiggly line $Y(t), -\infty < t < \infty$. A point process $N$ is a collection of times
+$\{\tau_j, j = 0, \pm 1,\pm 2, \ldots\}$. (It will be assumed that the $\tau_j$ are distinct.) A marked point process
+$J$ is a collection of times and associated quantities (marks) $\{(\tau_j,M_j), j = 0, \pm 1,\pm 2, \ldots \}$
+\cite{Brillinger.1994}.  So say we have a point process and want to caclulate the energy spectrum.
+
+The Dirac delta can be loosely thought of as a discontinuous function on the real line which is zero everywhere except
+at the origin, where it is undefined (or infinite, if you prefer);
+\[
+  \delta (x)={\begin{cases}+\mathrm{ undefined } ,&x=0\\0,&x\neq 0.\end{cases}}
+  \]
+However, it has the property that, for some mild conditions on $f$
+\[
+  \int _{-\infty }^{\infty }f(x)\,\delta(x) dx=f(0).
+\]
+
+The Dirac delta is a generalized function. No function in the traditional sense has this properties.
+
+\begin{figure}[tbhp]
+  \centering
+  \includegraphics[totalheight=7.5cm]{./figs/point_process.png}
+  \caption{Several specifications for point process data. From \cite{Eden.2019}}
+  \label{figure:point_process.png}
+\end{figure}
+%http://www.stat.columbia.edu/~liam/teaching/neurostat-fall19/uri-eden-point-process-notes.pdf
+
+\FloatBarrier
+\section{Fourier transform of a pulse or spike}
+A point process can be specified in several different ways (figure \ref{figure:point_process.png}). However,  
+
+
+Energy spectral density describes how the energy of a signal or a time series is distributed with frequency. 
+\[
+   E=\int _{-\infty }^{\infty }|x(t)|^{2}\,dt.
+ \]
+
+The energy spectral density is most suitable for transients - that is, pulse-like signals - having a finite total energy. 
+In this case, Parseval's theorem gives us an alternate expression for the energy of the signal:
+\[
+  \int _{-\infty }^{\infty }|x(t)|^{2}\,dt=\int _{-\infty }^{\infty }|{\hat {x}}(f)|^{2}\,df,
+  \]
+where
+$\hat {x}(f)=\int _{-\infty }^{\infty }e^{-2\pi ift}x(t)\,dt,$ is the Fourier transform of the signal and
+$f$ is the frequency in Hz, i.e., cycles per second. Since the integral on the right-hand side is the energy of the signal, the integrand 
+$\left|{\hat {x}}(f)\right|^{2}$ can be interpreted as a density function describing the energy per unit frequency contained in the signal at 
+the frequency $f$. In light of this, the energy spectral density of a signal $x ( t )$ is defined as
+$S_{xx}(f)=\left|{\hat {x}}(f)\right|^{2}$.
+	
+The above definition of energy spectral density is suitable for transients (pulse-like signals) whose energy is
+concentrated around one time window; then the Fourier transforms of the signals generally exist. For continuous signals
+over all time, such as stationary processes, one must rather define the power spectral density (PSD); this describes how
+power of a signal or time series is distributed over frequency, as in the simple example given previously. Here, power
+can be the actual physical power, or more often, for convenience with abstract signals, is simply identified with the
+squared value of the signal. For example, statisticians study the variance of a function over time $x(t)$
+\cite{wiki:Spectral_density}.
+
+%http://rundle.physics.ucdavis.edu/PHYGEO30/Fourier_Transforms.pdf
+
+\begin{itemize}
+\item \cite{Jarvis.and.Mitra.2001}
+  \begin{align*} 
+    \intertext{The autocovariance function.}
+    \mu_{ab} (\tau ) =& \dfrac{E [dN_a(t) dN_b (t + \tau )]}{dtd\tau}. \\
+    \intertext{The spectrum $S(f)$ is the Fourier transform of the autocovariance function}
+    S_{ab} ( f ) =& \int_\infty^\infty \mu_{ab} (\tau ) \exp(- 2\pi i f \tau )d\tau + \lambda_a \delta_{ab},  \\
+    \intertext{and the coherence, where indices 1 and 2 denote recorded spike trains from different samples.}
+    \gamma( f )  =& \dfrac{S_{12}(f) }{ \sqrt{ S_{11}(f) S_{22}(f)}}\\
+  \end{align*}
+\end{itemize}
+
+\section{Example 1}
+
+\section{Example 2}
+Initial SCID-X1 gene therapy clinical trials were conducted in Paris and London. The clinical results differed and the
+question was raised of the effect of different transduction conditions on transduced cells.  Human peripheral blood (PB)
+CD34+ cells were transduced with $\gamma$-retroviral vectors according to the transduction protocols employed in the
+initial clinical trials.  14 Cells cultured under London trial conditions showed relatively higher retention of CD34
+expression at the completion of the transduction period, compared to a loss of CD34-positivity in about half the cells
+transduced under the Paris trial conditions. Paris conditions, on the other hand, promoted higher levels of both
+proliferation and transduction, see \cite{Hallwirth.et.al.2015}.
+
+
+
+
+
+
+\section{Chronux}
+Chronux is an open-source software package being developed for the analysis of neural data. It is a collaborative
+research effort based at the Mitra Lab in Cold Spring Harbor Laboratory that has grown out of the work of several
+groups. Chronux routines may be employed in the analysis of both point process and continuous data, ranging from
+preprocessing, exploratory and confirmatory analysis. Chronux is currently implemented as a Matlab toolbox.
+
+The Chronux website at http://chronux.org/ is the central location for information about the current and all previous
+releases of Chronux. The home page contains links to pages for downloads, people, recent news, tutorials, various files,
+documentation and our discussion forum. There are also Google groups for Chronux discussion and Chronux announcements
+which you can join.  See also "Observed Brain Dynamics", Partha Mitra and Hemant Bokil, Oxford University Press, New York, 2008.
+
+Chronux is an open source project released under the GNU Public License GPL v2.
+
+
+\nocite{Eden.2019}
+\nocite{Baddeley.and.Turner.2005}
+\nocite{Cohen.2014}
+\nocite{Hallwirth.et.al.2015}
+\nocite{Pouzat.and.Chaffiol.2009}
+\nocite{Peng.2007}
+\nocite{hartePtProcessPackageModelling2010}
+\nocite{cebrianNHPoissonPackageFitting2015}
+
+\bibliographystyle{apalike}
+
+
+
+%\bibliography{/home/dun280/Dropbox/TeX/bibliography/screening_compliance.bib}
+\bibliography{./integration_sites}
+\end{document}
+
