@@ -1,8 +1,7 @@
 Package: PPspectra
-Title: energy spectra and coherence for point processes
-Version: 0.0.0.9000
-Authors@R: 
-    person(given = "Robert",
+Title: Energy Spectra and Coherence for Point Processes
+Version: 0.0.1
+Authors@R: person(given = "Robert",
            family = "Dunne",
            role = c("aut", "cre"),
            email = "rob.dunne@csiro.au",
@@ -14,6 +13,7 @@ LazyData: true
 Imports:
        multitaper,
        pracma
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 Suggests: R.rsp
 VignetteBuilder: R.rsp
+Depends: R (>= 2.10)

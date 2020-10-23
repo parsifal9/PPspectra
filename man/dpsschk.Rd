@@ -4,14 +4,16 @@
 \alias{dpsschk}
 \title{function to calculate tapers}
 \usage{
-dpsschk(tapers, N, Fs)
+dpsschk(N, k, nw, Fs)
 }
 \arguments{
-\item{tapers}{NW K - time-bandwidth product, number of tapers}
-
 \item{N}{(number of samples}
 
 \item{Fs}{sampling frequency}
+
+\item{K}{- number of tapers, often 2*nw for  spectrum estimation purposes.}
+
+\item{NW}{- A positive double-precision number, the time-bandwidth parameter}
 }
 \value{
 tapers

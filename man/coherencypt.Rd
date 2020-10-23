@@ -11,8 +11,8 @@ coherencypt(
   err = c(2, 0.05),
   fpass = c(0, 1500),
   pad = 0,
-  tt = matrix(c(50, 99), 1, 2),
-  tapers = matrix(c(50, 99), 1, 2),
+  nw = 50,
+  k = 2 * nw - 1,
   fscorr = 0
 )
 }
