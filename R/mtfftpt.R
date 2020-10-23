@@ -48,9 +48,17 @@ mtfftpt <- function(data,tapers,nfft,t,f,findx){
     
     data_proj <-apply(tapers,2,fm<-function(x){pracma::interp1(t,x,dtmp) })
     
-    aa<-outer(w,(dtmp-t[1]))
-    exponential <- exp(-1i*aa)
-    J <- exponential %*%data_proj-H*Msp[ch]
+    #aa<-outer(w,(dtmp-t[1]))
+    #exponential <- exp(-1i*aa)
+    #J <- exponential %*%data_proj-H*Msp[ch]
+
+    J <- f1(w,dtmp-t[1],data_proj)
+    J <- J - H*Msp[ch]
+
+
+
+
+    
     aa<-list()
     aa$J <- J
     aa$Nsp <- Nsp
