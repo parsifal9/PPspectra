@@ -10,7 +10,7 @@
 #' 
 #' @export
 dpsschk <-function(N,k,nw, Fs){
-    tapers <-multitaper::dpss(N=N,k=k,nw=nw)
+    tapers <-multitaper::dpss(n=N,k=k,nw=nw)
     tapers$v = tapers$v*sqrt(Fs)
     tapers$v
 }
