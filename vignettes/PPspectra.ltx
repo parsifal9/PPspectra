@@ -122,45 +122,105 @@
 \maketitle
 \tableofcontents
 \section{Introduction}
-We could find no package in R that explicitly offered the calculation of an energy spectra for a point process.  
-The Chronux Matlab package offered this so we have taken a small number of functions and coded them in R. We have kept
-the same names ( \texttt{mtspectrumpt} and \texttt{coherencypt}) for uses familiar with Chronux, but the calling
-parameters may have changed.
+We  consider the question of analysing a point process (a collection of ``times'') in the frequency domain.
+This raises the question of how, if we model a point process as series of spikes at particular times, we transform the
+time domain to the frequence domain. We mention here that:
+\begin{itemize}
+\item there are many excellent packages in R \cite[]{r.2013}, for the time domain analysis of point processes;
+\item the modelling choice to model the data as a ``spike train'' may be more natural in some settings than others.  The
+  term ``spike train'' comes from the neuroscience literature.  \cite[]{Eden.2019,Pouzat.and.Chaffiol.2009} model the firing
+  times of neurons as a point process that is then analysed as a ``spike train'' where each event is an electrical
+  pulse, a signal of zero time duration with some particular mathematical properties. 
+\end{itemize}
+
+The frequency domain has several advantages in that subtle structure can be detected which may be difficult to observe
+in the time domain. Secondly, the time domain estimators can have problems with sensitivity to weak non-stationarity.
+\cite{Jarvis.and.Mitra.2001} is a key reference in this area. As they comment, most of the literature is targeted at
+either spectral analysis of continuous processes or at the analysis of point processes but in the time domain.
+
+We could find no package in R that explicitly offered the calculation of an energy spectra for a point process.  The
+Chronux Matlab package \cite[]{Mitra.and.Bokil.2007,chronux}, offered this so we have taken a small number of functions
+and coded them in R. We have kept the same names ( \texttt{mtspectrumpt} and \texttt{coherencypt}) for uses familiar
+with Chronux, but the calling parameters may have changed.
+
+
+
 
   
-\section{point processes}
+\section{point processes, and Dirac $\delta$ ``functions''}
 As \cite{Brillinger.1994} says ``A time series $Y$ is a wiggly line $Y(t), -\infty < t < \infty$. A point process $N$ is a collection of times
 $\{\tau_j, j = 0, \pm 1,\pm 2, \ldots\}$. (It will be assumed that the $\tau_j$ are distinct.) A marked point process
 $J$ is a collection of times and associated quantities (marks) $\{(\tau_j,M_j), j = 0, \pm 1,\pm 2, \ldots \}$.''
 
-So say we have a point process. Now as \citeauthor{Brillinger.1994} says, this is just a collection of times and it can be
-specified in a number of ways as show in figure \ref{figure:point_process.png}. In the neuroscience literature
-\cite[]{Eden.2019,Pouzat.and.Chaffiol.2009} the firing times of neurons yield a point process that is often analysed as a
-``spike train'' where each event is an electrical pulse.
+So say we have a point process. This is just a collection of times and it can be
+specified in a number of ways as shown in figure \ref{figure:pp_representation.png}. $d\bar{N}(t)/dt$ is a series of delta functions.
 
-An electrial pulses like this is commonly analysed as a Dirac delta. The Dirac delta can be loosely thought of as a
+An electrial pulses is commonly analysed as a Dirac delta. The Dirac delta can be loosely thought of as a
 discontinuous function on the real line which is zero everywhere except at the origin, where it is undefined (or
 infinite, if you prefer);
 \[
   \delta (x)={\begin{cases}\mathrm{ undefined } ,&x=0\\0,&x\neq 0.\end{cases}}
   \]
-However, it has the property that, for some mild conditions on $f$
+However, it has the property that, for some mild conditions on $f,$
 \[
   \int _{-\infty }^{\infty }f(x)\,\delta(x) dx=f(0).
 \]
 The Dirac delta is a generalized function. No function in the traditional sense has this property.
 
+
+
 \begin{figure}[tbhp]
   \centering
-  \includegraphics[totalheight=7.5cm]{./figs/point_process.png}
-  \caption{Several specifications for point process data. From \cite{Eden.2019}}
-  \label{figure:point_process.png}
+  \includegraphics[width=\textwidth,totalheight=4.5cm]{./figs/pp_representation.png}
+  \caption{Several specifications for point process data. The counting process $N(t)$
+    is the number of spikes which occur up to time $t$,  $\bar{N}(t)= N(t) - \lambda t$, where $\lambda$ is the mean
+    rate. $d\bar{N}(t)/dt,$  is a series of delta functions. From \cite{Jarvis.and.Mitra.2001}.}
+  \label{figure:pp_representation.png}
 \end{figure}
 %http://www.stat.columbia.edu/~liam/teaching/neurostat-fall19/uri-eden-point-process-notes.pdf
 
 \FloatBarrier
-\section{Fourier transform of a pulse or spike}
-Define the energy of a signal or a time series as
+%\section{Fourier transform of a pulse or spike}
+%The above definition of energy spectral density is suitable for transients (pulse-like signals) whose energy is
+%concentrated around one time window; then the Fourier transforms of the signals generally exist. For continuous signals
+%over all time, such as stationary processes, one must rather define the power spectral density (PSD); this describes how
+%power of a signal or time series is distributed over frequency, as in the simple example given previously. Here, power
+%can be the actual physical power, or more often, for convenience with abstract signals, is simply identified with the
+%squared value of the signal. For example, statisticians study the variance of a function over time $x(t)$
+%\cite{wiki:Spectral_density}.
+%http://rundle.physics.ucdavis.edu/PHYGEO30/Fourier_Transforms.pdf
+
+
+\section{autocovariance, spectra and coherence}
+\begin{align*}
+%  \dfrac{E\{dN(t)\}}{dt} &= \lambda dt \\
+%  \intertext{and }
+%  \dfrac{E\{d\bar{N}(t)\}}{dt} &= 0.\\
+  \intertext{The autocovariance is a function that gives the covariance of the process with itself at pairs of time
+points. It is }
+  \mu (\tau ) +\lambda \delta(\tau) =& \dfrac{E [d\bar{N}(t) d\bar{N}(t + \tau )]}{dtd\tau}. \\
+  \intertext{The spectrum $S(f)$ is the Fourier transform of the autocovariance function}
+  S( f ) =& \lambda + \int_\infty^\infty \mu (\tau ) \exp(- 2\pi i f \tau )d\tau 
+\end{align*}
+
+We can extend these definitions to simultaneously recorded spike trains. The cross-covariance is a function that gives
+the covariance of one process with points on another process
+\begin{align*}
+  \mu_{ab} (\tau ) +\lambda_{ab} \delta_{ab}(\tau) =& \dfrac{E [d\bar{N}(t) d\bar{N}(t + \tau )]}{dtd\tau}. \\
+  \intertext{The spectrum $S(f)$ is the Fourier transform of the autocovariance function}
+  S_{ab}( f ) =& \lambda + \int_\infty^\infty \mu_{ab} (\tau ) \exp(- 2\pi i f \tau )d\tau  \\
+  \intertext{and the coherence.}
+  \gamma( f )  =& \dfrac{S_{ab}(f) }{ \sqrt{ S_{aa}(f) S_{bb}(f)}}.\\
+\end{align*}
+
+The spectrum is real and positive but the coherency is complex valued. The modulus of the
+coherency, which is known as the coherence , can only vary between zero and one. This makes coherence particularly
+attractive for detecting relationships between spike trains as it is insensitive to the mean spike rates.
+
+
+
+\section{Spectral Estimators}
+Taking our data to be $d\bar{N}(t)=x(t),$ say, we define the energy of the signal as
 \[
    E=\int _{-\infty }^{\infty }|x(t)|^{2}\,dt.
  \]
@@ -177,40 +237,28 @@ is the Fourier transform of the signal and
 $f$ is the frequency in Hz (cycles per second). Since the integral on the right-hand side is the energy of the signal, the integrand 
 $\left|{\hat {x}}(f)\right|^{2}$ can be interpreted as a density function describing the energy per unit frequency contained in the signal at 
 the frequency $f$. In light of this, the energy spectral density of a signal $x ( t )$ is defined as
-$S_{xx}(f)=\left|{\hat {x}}(f)\right|^{2}$.
-	
-%The above definition of energy spectral density is suitable for transients (pulse-like signals) whose energy is
-%concentrated around one time window; then the Fourier transforms of the signals generally exist. For continuous signals
-%over all time, such as stationary processes, one must rather define the power spectral density (PSD); this describes how
-%power of a signal or time series is distributed over frequency, as in the simple example given previously. Here, power
-%can be the actual physical power, or more often, for convenience with abstract signals, is simply identified with the
-%squared value of the signal. For example, statisticians study the variance of a function over time $x(t)$
-%\cite{wiki:Spectral_density}.
-
-%http://rundle.physics.ucdavis.edu/PHYGEO30/Fourier_Transforms.pdf
+$S_{xx}(f)=\left|{\hat {x}}(f)\right|^{2}$. This is the Periodogram.
 
 
-The autocovariance is a function that gives the covariance of the process with itself at pairs of time
-points.
-%https://www.egr.msu.edu/classes/ece458/radha/ss07Keyur/Lab-Handouts/PSDESDetc.pdf
-
-
-\begin{itemize}
-\item \cite{Jarvis.and.Mitra.2001}
-  \begin{align*} 
-    \intertext{The autocovariance function.}
-    \mu_{ab} (\tau ) =& \dfrac{E [dN_a(t) dN_b (t + \tau )]}{dtd\tau}. \\
-    \intertext{The spectrum $S(f)$ is the Fourier transform of the autocovariance function}
-    S_{ab} ( f ) =& \int_\infty^\infty \mu_{ab} (\tau ) \exp(- 2\pi i f \tau )d\tau + \lambda_a \delta_{ab},  \\
-    \intertext{and the coherence, where indices 1 and 2 denote recorded spike trains from different samples.}
-    \gamma( f )  =& \dfrac{S_{12}(f) }{ \sqrt{ S_{11}(f) S_{22}(f)}}\\
-  \end{align*}
-\end{itemize}
-
+\cite{Jarvis.and.Mitra.2001} warn that the periodigram is seriously flawed. A improved way to get a spectral estimator
+is the modulus squared of the Fourier transform of the data multiplied by an envelope function $h(t)$, known as a taper,
+such that
+\begin{align*}
+  \int_0^T h(t)^2 dt  = & 1.\\
+  \intertext{Then the estimator is}
+  S_{xx} = & \int_0^T h(t) \exp{\{-2\pi i f t\}} d \bar{N} (t)\\
+  =& \sum_{j=1}^{N(T)} h(t_j) ) \exp{\{ -2\pi i f t_j\}} -\dfrac{N(T)H(f)}{T}
+\intertext{where $H(f)$ is the Fourier transform of the taper. $N(T)/T$ is an estimate of the population parameter $\lambda.$}     
+\end{align*}
+         
+The basic idea of multitaper spectral estimation is to average
+the spectral estimates from several orthogonal tapers.
 \section{Example 1}
 
 \section{Example 2}
-Initial SCID-X1 gene therapy clinical trials were conducted in Paris and London. The clinical results differed and the
+X-linked severe combined immunodeficiency (SCID-X1) is an inherited disease caused by inactivating mutations in the gene
+encoding the interleukin 2 receptor common gamma chain (IL2RG), which is located on the X-chromosome.
+SCID-X1 gene therapy clinical trials were conducted in Paris and London. The clinical results differed and the
 question was raised of the effect of different transduction conditions on transduced cells.  Human peripheral blood (PB)
 CD34+ cells were transduced with $\gamma$-retroviral vectors according to the transduction protocols employed in the
 initial clinical trials.  14 Cells cultured under London trial conditions showed relatively higher retention of CD34
@@ -250,7 +298,7 @@ Chronux is an open source project released under the GNU Public License GPL v2.
 
 
 
-%\bibliography{/home/dun280/Dropbox/TeX/bibliography/screening_compliance.bib}
 \bibliography{./integration_sites}
 \end{document}
 
+%https://www.egr.msu.edu/classes/ece458/radha/ss07Keyur/Lab-Handouts/PSDESDetc.pdf
