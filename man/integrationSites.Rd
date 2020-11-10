@@ -19,18 +19,15 @@ Supplied by the authors
 integrationSites
 }
 \description{
-A dataset containing viral integration sites.  The aim here is to compare the viral
-integration pattern under two different laboratory protocols, termed London and Paris.
-Hematopoietic stem cells mobilized in a 7-year-old male pediatric oncology patient
-using G-CSF and chemotherapy were CD34-selected. All cell stocks used in this study
-were no longer required for clinical application, and available for research under a
-Human Research Ethics approval at the Children’s Hospital at Westmead. CD34 + cells
-were transduced with independent batches of MGMT-encoding MFG-based γ-retroviral
-vectors collected from the supernatant of PG13 producer cells. Vector stocks for the
-London conditions were serum-free, containing 1% human serum albumin. Vector stocks for
-the Paris conditions contained 4% FCS. For full details see "Coherence Analysis
-Discriminates between Retroviral Integration Patterns in {{CD34}}+ Cells Transduced
-under Differing Clinical Trial
-Conditions",Molecular Therapy. Methods \& Clinical DevelopmentHallwirth, Claus et. al. 2015(2)
+X-linked severe combined immunodeficiency (SCID-X1) is an inherited
+disease caused by inactivating mutations in the gene
+encoding the interleukin 2 receptor common gamma chain (IL2RG), which is located on the X-chromosome.
+SCID-X1 gene therapy clinical trials were conducted in Paris and London. The clinical results differed and the
+question was raised of the effect of different transduction conditions on transduced cells.  Human peripheral blood (PB)
+CD34+ cells were transduced with $\gamma$-retroviral vectors according to the transduction protocols employed in the
+initial clinical trials.  14 Cells cultured under London trial conditions showed relatively higher retention of CD34
+expression at the completion of the transduction period, compared to a loss of CD34-positivity in about half the cells
+transduced under the Paris trial conditions. Paris conditions, on the other hand, promoted higher levels of both
+proliferation and transduction, see \cite{Hallwirth.et.al.2015}.
 }
 \keyword{datasets}

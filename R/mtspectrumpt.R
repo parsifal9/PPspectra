@@ -4,16 +4,16 @@
 #'
 #' @param PP the data
 #' @param Fs sampling frequency
-#' @param err sampling frequency
-#' @param fpass sampling frequency
-#' @param pad sampling frequency
-#' @param tapers sampling frequency
-#' @param fscorr sampling frequency
+#' @param fpass (fmin, fmax), frequency band to be used in the calculation. Defaults to (0, Fs/2)
+#' @param pad   (padding factor for the FFT). Not currently used, i.e. no padding is done
+#' @param nw   A positive double-precision number, the time-bandwidth paramter for the tapers
+#' @param k   A positive integer, the number of tapers, defaults to  2*nw-1
 #'
-#' @return S   
+#' @return S  the estimated spectrum
+#' @return f  the frequencies
 #' 
 #' @export
-mtspectrumpt<-function(PP, Fs  =   3000,err  =  c(2, 0.0500),fpass  =  c(0, 1500),pad  =  0,nw=50 ,k= 2*nw-1,fscorr =  0){
+mtspectrumpt<-function(PP, Fs  =   3000,fpass  =  c(0, Fs/2),pad  =  0,nw=50 ,k= 2*nw-1,fscorr =  0){
     mintime <- min(PP)
     maxtime <- max(PP)
     dt <- 1/Fs #% sampling time
@@ -69,5 +69,5 @@ mtspectrumpt<-function(PP, Fs  =   3000,err  =  c(2, 0.0500),fpass  =  c(0, 1500
 
     J<-temp$J 
     S<-apply(Conj(J)*J,1,mean)
-    Re(S)
+    list(f=f,S=Re(S))
 }

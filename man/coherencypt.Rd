@@ -8,12 +8,10 @@ coherencypt(
   data1,
   data2,
   Fs = 3000,
-  err = c(2, 0.05),
   fpass = c(0, 1500),
   pad = 0,
   nw = 50,
-  k = 2 * nw - 1,
-  fscorr = 0
+  k = 2 * nw - 1
 )
 }
 \arguments{
@@ -21,14 +19,26 @@ coherencypt(
 
 \item{data2}{array of spike times}
 
-\item{fscorr}{finite size corrections}
+\item{Fs}{sampling frequency}
 
-\item{params}{}
+\item{fpass}{(fmin, fmax), frequency band to be used in the calculation. Defaults to (0, Fs/2)}
 
-\item{t}{time grid over which the tapers are to be calculated
+\item{pad}{(padding factor for the FFT). Not currently used, i.e. no padding is done}
 
- @return  C          frequencies)
- @return findx     index of the frequencies in the full frequency grid}
+\item{nw}{A positive double-precision number, the time-bandwidth paramter for the tapers}
+
+\item{k}{A positive integer, the number of tapers, defaults to  2*nw-1}
+
+\item{fscorr}{finite size corrections -- not implemented yet}
+}
+\value{
+S1     the estimated spectrum for data1
+
+S2     the estimated spectrum for data2
+
+C12    the coherency
+
+f      the frequencies
 }
 \description{
 Multi-taper coherency - point process times

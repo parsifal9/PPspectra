@@ -7,8 +7,7 @@
 mtspectrumpt(
   PP,
   Fs = 3000,
-  err = c(2, 0.05),
-  fpass = c(0, 1500),
+  fpass = c(0, Fs/2),
   pad = 0,
   nw = 50,
   k = 2 * nw - 1,
@@ -20,18 +19,18 @@ mtspectrumpt(
 
 \item{Fs}{sampling frequency}
 
-\item{err}{sampling frequency}
+\item{fpass}{(fmin, fmax), frequency band to be used in the calculation. Defaults to (0, Fs/2)}
 
-\item{fpass}{sampling frequency}
+\item{pad}{(padding factor for the FFT). Not currently used, i.e. no padding is done}
 
-\item{pad}{sampling frequency}
+\item{nw}{A positive double-precision number, the time-bandwidth paramter for the tapers}
 
-\item{fscorr}{sampling frequency}
-
-\item{tapers}{sampling frequency}
+\item{k}{A positive integer, the number of tapers, defaults to  2*nw-1}
 }
 \value{
-S
+S  the estimated spectrum
+
+f  the frequencies
 }
 \description{
 multi-taperd spectrum of data preseted as spike locations

@@ -3,17 +3,22 @@
 #' Multi-taper coherency - point process times
 #'
 #' @param  data1  array of spike times 
-#' @param  data2  array of spike times 
-#' @param  params
-#' @param fscorr  finite size corrections
-#' @param  t   time grid over which the tapers are to be calculated
+#' @param  data2  array of spike times
+#' @param Fs sampling frequency
+#' @param fpass (fmin, fmax), frequency band to be used in the calculation. Defaults to (0, Fs/2)
+#' @param pad   (padding factor for the FFT). Not currently used, i.e. no padding is done
+#' @param nw   A positive double-precision number, the time-bandwidth paramter for the tapers
+#' @param k   A positive integer, the number of tapers, defaults to  2*nw-1
+#' @param fscorr  finite size corrections -- not implemented yet
 #'
-#'  @return  C          frequencies)
-#'  @return findx     index of the frequencies in the full frequency grid
+#' @return  S1     the estimated spectrum for data1
+#' @return  S2     the estimated spectrum for data2
+#' @return  C12    the coherency
+#' @return  f      the frequencies
 #' 
 #' @export
-coherencypt<-function(data1,data2,Fs  =   3000,err  =  c(2, 0.0500),fpass  =  c(0, 1500),
-                      pad  =  0,nw=50 ,k= 2*nw-1,fscorr =  0){
+
+coherencypt<-function(data1,data2,Fs  =   3000,fpass  =  c(0, 1500),  pad  =  0,nw=50 ,k= 2*nw-1){
     mintime1 <- min(data1)
     maxtime1 <- max(data1)
     mintime2 <- min(data1)
