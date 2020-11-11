@@ -24,7 +24,7 @@ disease caused by inactivating mutations in the gene
 encoding the interleukin 2 receptor common gamma chain (IL2RG), which is located on the X-chromosome.
 SCID-X1 gene therapy clinical trials were conducted in Paris and London. The clinical results differed and the
 question was raised of the effect of different transduction conditions on transduced cells.  Human peripheral blood (PB)
-CD34+ cells were transduced with $\gamma$-retroviral vectors according to the transduction protocols employed in the
+CD34+ cells were transduced with $gamma$-retroviral vectors according to the transduction protocols employed in the
 initial clinical trials.  14 Cells cultured under London trial conditions showed relatively higher retention of CD34
 expression at the completion of the transduction period, compared to a loss of CD34-positivity in about half the cells
 transduced under the Paris trial conditions. Paris conditions, on the other hand, promoted higher levels of both
