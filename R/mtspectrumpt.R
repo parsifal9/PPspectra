@@ -1,6 +1,6 @@
-#'  multi-taperd spectrum of data preseted as spike locations
+#'  multi-tapered spectrum of data presented as spike locations
 #'
-#' multi-taperd spectrum of data preseted as spike locations
+#' multi-tapered spectrum of data presented as spike locations
 #'
 #' @param PP the data
 #' @param Fs sampling frequency

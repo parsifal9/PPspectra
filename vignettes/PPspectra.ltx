@@ -124,8 +124,9 @@ We  consider the question of analysing a point process (a collection of ``times'
 This raises the question of how, if we model a point process as series of spikes at particular times, we transform the
 time domain to the frequence domain. We mention here that:
 \begin{itemize}
-\item there are many excellent packages in R \cite[]{r.2013}, for the time domain analysis of point processes;
-\item the modelling choice to model the data as a ``spike train'' may be more natural in some settings than others.  The
+\item there are many excellent packages in R \cite[]{r.2013}, for the time domain analysis of point processes. There
+  appears to be a dearth of software for the frequence analysis of point processes;
+\item the choice to model the data as a ``spike train'' may be more natural in some settings than others.  The
   term ``spike train'' comes from the neuroscience literature.  \cite[]{Eden.2019,Pouzat.and.Chaffiol.2009} model the firing
   times of neurons as a point process that is then analysed as a ``spike train'' where each event is an electrical
   pulse, a signal of zero time duration with some particular mathematical properties. 
@@ -205,9 +206,9 @@ We can extend these definitions to simultaneously recorded spike trains. The cro
 the covariance of one process with points on another process
 \begin{align*}
   \mu_{ab} (\tau ) +\lambda_{ab} \delta_{ab}(\tau) =& \dfrac{E [d\bar{N}(t) d\bar{N}(t + \tau )]}{dtd\tau}. \\
-  \intertext{The spectrum $S(f)$ is the Fourier transform of the autocovariance function}
+  \intertext{The cross-spectrum $S(f)$ is the Fourier transform of the cross-covariance function}
   S_{ab}( f ) =& \lambda + \int_\infty^\infty \mu_{ab} (\tau ) \exp(- 2\pi i f \tau )d\tau  \\
-  \intertext{and the coherence.}
+  \intertext{and the coherence is}
   \gamma( f )  =& \dfrac{S_{ab}(f) }{ \sqrt{ S_{aa}(f) S_{bb}(f)}}.\\
 \end{align*}
 
@@ -245,14 +246,36 @@ such that
   \int_0^T h(t)^2 dt  = & 1.\\
   \intertext{Then the estimator is}
   S_{xx} = & \int_0^T h(t) \exp{\{-2\pi i f t\}} d \bar{N} (t)\\
-  =& \sum_{j=1}^{N(T)} h(t_j) ) \exp{\{ -2\pi i f t_j\}} -\dfrac{N(T)H(f)}{T}
+  =& \sum_{j=1}^{N(T)} h(t_j)  \exp{\{ -2\pi i f t_j\}} -\dfrac{N(T)H(f)}{T}
 \intertext{where $H(f)$ is the Fourier transform of the taper. $N(T)/T$ is an estimate of the population parameter $\lambda.$}     
 \end{align*}
-         
 The basic idea of multitaper spectral estimation is to average
 the spectral estimates from several orthogonal tapers.
+
+
+
 \section{Example 1}
 Need a simulated example here
+\begin{lstlisting}[caption=Example 2., label=listing1]
+  library(poisson)
+aa1<-hpp.event.times(10, 1000, num.sims = 1, t0 = 0)
+S1<-mtspectrumpt(aa, Fs  =   100)
+plot(S1$f, S1$S,type="l")
+
+aa2<-hpp.event.times(20, 1000, num.sims = 1, t0 = 0)
+S2<-mtspectrumpt(aa2, Fs  =   100)
+plot(S2$f, S2$S,type="l")
+
+system.time(C12<-coherencypt(aa1,aa2,Fs  =   500))
+plot(C12$f,C12$C12,type="l")
+
+rate <- 100
+target <- 1000
+intensity <- function(t){ pmin(t/3, 1)}
+cc1<-nhpp.event.times(rate, target, intensity)
+S3<-mtspectrumpt(cc1, Fs  =   500)
+plot(S3$f, S3$S,type="l")
+\end{lstlisting}
 
 \section{Example 2}
 X-linked severe combined immunodeficiency (SCID-X1) is an inherited disease caused by inactivating mutations in the gene
@@ -267,6 +290,25 @@ proliferation and transduction, see \cite{Hallwirth.et.al.2015}.
 
 
 
+\begin{lstlisting}[caption=Example 2., label=listing2]
+data(integrationSites)
+Paris<-integrationSites$Paris
+Paris<-as.vector(as.matrix(Paris))
+Paris<-Paris/1e+09
+London<-integrationSites$London
+London<-as.vector(as.matrix(London))
+London<-London/1e+09
+
+system.time(S.Paris<-mtspectrumpt(Paris, Fs  =   1000))
+#  user  system elapsed 
+#294.788  49.709 210.565
+plot(S.Paris$f, S.Paris$S)
+
+system.time(C12<-coherencypt(Paris,London,Fs  =   500))
+#user  system elapsed 
+#369.944  81.602 294.154 
+plot(C12$f,C12$C12,ylim=c(0.8,1),type="l")
+\end{lstlisting}
 
 
 
