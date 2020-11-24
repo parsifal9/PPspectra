@@ -2,7 +2,7 @@
 % Please edit documentation in R/mtspectrumpt.R
 \name{mtspectrumpt}
 \alias{mtspectrumpt}
-\title{multi-taperd spectrum of data preseted as spike locations}
+\title{multi-tapered spectrum of data presented as spike locations}
 \usage{
 mtspectrumpt(
   PP,
@@ -33,5 +33,5 @@ S  the estimated spectrum
 f  the frequencies
 }
 \description{
-multi-taperd spectrum of data preseted as spike locations
+multi-tapered spectrum of data presented as spike locations
 }

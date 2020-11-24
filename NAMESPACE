@@ -3,5 +3,6 @@
 export(coherencypt)
 export(dpsschk)
 export(getfgrid)
+export(hpp.event.times)
 export(mtfftpt)
 export(mtspectrumpt)

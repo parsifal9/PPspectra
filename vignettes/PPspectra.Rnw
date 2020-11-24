@@ -259,25 +259,83 @@ this becomes very important.
 
 
 \begin{lstlisting}[caption=Example 1., label=listing1]
-#300 events per second -- \lambda -- the rate
+  library(PPspectra)
+  
+  #300 events per second -- \lambda -- the rate
 #want 300 events -- so will run until we get 300 
-aa1<-hpp.event.times(rate=300, 300, num.sims = 1, t0 = 0)
-aa1<-round(aa1,4)
-aa1<-aa1[aa1< 1.0]
-aa1<-unique(aa1)
+set.seed(123)
+aa1<-hpp.event.times(rate=300, 300)
+set.seed(124)
+aa2<-hpp.event.times(rate=300, 300)
+
+bw <- bw.SJ(aa1)
+smooth <- density(aa1,bw=bw/10,n = 1000)
+print(smooth$bw)
+plot(smooth$x,smooth$y,type="l")
+rug(aa1)
 
 
-#I am setting the sampling frequence to 600. That is, the signal is sampled 600 times a second.
-# this has to be high enough that the time difference beteen spikes in aa1 is greater than the sampling intervale
-S1<-mtspectrumpt(aa1, Fs  =   1000)
+
+#I am setting the sampling frequency to 600. That is, the signal is sampled 600 times a second.
+# this has to be high enough that the time difference between spikes in aa1 is greater than the sampling intervale
+S1<-mtspectrumpt(aa1, Fs  =   10000)
 plot(S1$f, S1$S,type="l",col="red")
+S1<-mtspectrumpt(aa1, Fs  =   1000)
+lines(S1$f, S1$S,type="l",col="black")
 S1<-mtspectrumpt(aa1, Fs  =   600)
 lines(S1$f, S1$S,type="l",col="blue")
 S1<-mtspectrumpt(aa1, Fs  =   300)
 lines(S1$f, S1$S,type="l",col="green")
+
+#what difference do nw and k make
+# k A positive integer, the number of tapers, often 2*nw for spectrum estimation purposes.
+# nw A positive double-precision number, the time-bandwidth parameter.
+S1<-mtspectrumpt(aa1, Fs  =   10000,nw = 3,  k = 5)
+plot(S1$f, S1$S,type="l",col="red")
+S1<-mtspectrumpt(aa1, Fs  =   10000,nw = 50,  k = 5)
+lines(S1$f, S1$S,type="l",col="blue")
+S1<-mtspectrumpt(aa1, Fs  =   10000,nw = 3,  k = 99)
+lines(S1$f, S1$S,type="l",col="orange")
+S1<-mtspectrumpt(aa1, Fs  =   10000,nw = 50,  k = 99)
+lines(S1$f, S1$S,type="l",col="black",lwd=2)
+
+
+S1<-mtspectrumpt(aa1, Fs  =   10000,nw = 50,  k = 99,pad=1)
+plot(S1$f, S1$S,type="l",col="red")
+S1<-mtspectrumpt(aa1, Fs  =   10000,nw = 50,  k = 99,pad=5)
+lines(S1$f, S1$S,type="l",col="blue")
+S1<-mtspectrumpt(aa1, Fs  =   10000,nw = 50,  k = 99,pad=10)
+lines(S1$f, S1$S,type="l",col="blue")
+
+
+
+set.seed(100)
+bb1<-hpp.event.times(rate=600, 600)
+smooth <- density(bb1,n = 1000,from=0,to=1)
+plot(smooth$x,smooth$y,type="l")
+rug(bb1)
+smooth <- density(aa1,n = 1000,from=0,to=1)
+lines(smooth$x,smooth$y,col="red")
+smooth <- density(aa2,n = 1000,from=0,to=1)
+lines(smooth$x,smooth$y,col="green")
+
+S1<-mtspectrumpt(aa1, Fs  =   10000)
+plot(S1$f, S1$S,type="l",col="red",ylim=c(0,800))
+S1<-mtspectrumpt(aa2, Fs  =   10000)
+lines(S1$f, S1$S,type="l",col="black")
+S1<-mtspectrumpt(bb1, Fs  =   10000)
+lines(S1$f, S1$S,type="l",col="green")
+
+
+cc1<-coherencypt(aa1,aa2, Fs  =   10000,fpass = c(0, 5000))
+plot(cc1$f, cc1$C12,ylim=c(0,0.3),type="l",col="blue")
+cc1<-coherencypt(aa1,bb1, Fs  =   10000,fpass = c(0, 5000))
+lines(cc1$f, cc1$C12,col="red")
 \end{lstlisting}
 
 \section{Example 2}
+
+\section{Example 3}
 X-linked severe combined immunodeficiency (SCID-X1) is an inherited disease caused by inactivating mutations in the gene
 encoding the interleukin 2 receptor common gamma chain (IL2RG), which is located on the X-chromosome.
 SCID-X1 gene therapy clinical trials were conducted in Paris and London. The clinical results differed and the
