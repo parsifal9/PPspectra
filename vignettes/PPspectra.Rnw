@@ -1,6 +1,345 @@
 \documentclass{article}
-\usepackage{pdfpages}
-%\VignetteIndexEntry{author2019mypaper}
+%%\DeclareGraphicsExtensions{.pdf,.eps}
+
+%% need no \usepackage{Sweave}
+
+\usepackage{url}
+\usepackage{rotating}
+\usepackage{natbib}
+\usepackage{placeins}
+\usepackage{longtable}
+\usepackage[latin1]{inputenc}
+\usepackage{multirow}
+\usepackage{hyperref}
+%\usepackage{showframe}
+\usepackage{pdflscape}
+%\usepackage{pbox}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{rotating}
+\usepackage{multicol}
+\usepackage{caption}
+\usepackage{verbatim}
+
+
+
+\usepackage{pdflscape}
+
+\usepackage{listings}
+
+\lstset{
+  basicstyle=\ttfamily, 
+  basewidth=0.5em,                 %the default setting of listings with "fixed columns" has a space 0.6em wide, 
+                                   %while the characters in Computer Modern Typewriter are 0.5em wide.
+                                   %http://tex.stackexchange.com/questions/179071/spacing-looks-wrong-in-listings-when-using-fixed-columns
+  backgroundcolor=\color{gray!10},
+  keywordstyle=\color{green!40!black},
+  columns=fixed,
+  language=R,                     % the language of the code
+  basicstyle=\footnotesize,       % the size of the fonts that are used for the code
+  numbers=left,                   % where to put the line-numbers
+  numberstyle=\tiny\color{gray},  % the style that is used for the line-numbers
+  stepnumber=1,                   % the step between two line-numbers. If it's 1, each line
+                                  % will be numbered
+  numbersep=5pt,                  % how far the line-numbers are from the code
+  showspaces=false,               % show spaces adding particular underscores
+  showstringspaces=false,         % underline spaces within strings
+  showtabs=false,                 % show tabs within strings adding particular underscores
+  frame=single,                   % adds a frame around the code
+  rulecolor=\color{black},        % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. commens (green here))
+  tabsize=2,                      % sets default tabsize to 2 spaces
+  captionpos=b,                   % sets the caption-position to bottom
+  breaklines=true,                % sets automatic line breaking
+  breakatwhitespace=false,        % sets if automatic breaks should only happen at whitespace
+  title=\lstname,                 % show the filename of files included with \lstinputlisting;
+                                  % also try caption instead of title
+  keywordstyle=\color{blue},      % keyword style
+  commentstyle=\color{green},   % comment style
+  stringstyle=\color{red},      % string literal style
+  escapeinside={\%*}{*)},         % if you want to add a comment within your code
+  morekeywords={*,...}            % if you want to add more keywords to the set
+} 
+
+\usepackage{graphicx}
+\usepackage{gensymb}
+\usepackage{nag}   %It warns the user about the usage of old packages or commands (for example, using \it, \tt, etc.)
+\usepackage{fixltx2e}
+%fixltx2e package. It fixes some 'mistakes' in Latex. From the description:
+%        ensure one-column floats don't get ahead of two-column floats;
+%        correct page headers in twocolumn documents;
+%        stop spaces disappearing in moving arguments;
+%        allowing \fnysmbol to use text symbols;
+%        allow the first word after a float to hyphenate;
+%        \emph can produce caps/small caps text;
+\usepackage{booktabs}
+% \centering instead of \begin{center} \end{center} to center things inside tables/figures etc. \centering doesn't add any additional vertical space.
+\usepackage{microtype}  %for small-scale typographic enhancements (character protrusion, font expansion, letter-spacing).
+\usepackage{fancyvrb}   %get precise control in verbatim listings.
+%\usepackage{siunitx} To typeset units
+\usepackage{numprint} %format numbers nicely 
+%~, the non-breakable space.
+
+\author{Rob Dunne,  Suzanne Scott, Laurence Wilson, Claus Hallwirth}
+
+\title{Energy Spectra and Coherence for Point Processes}
+
 \begin{document}
-\includepdf[pages=-, fitpaper=true]{tt.pdf}
+\maketitle
+\SweaveOpts{engine=R,eps=FALSE}
+%\VignetteIndexEntry{Energy Spectra and Coherence for Point Processes}
+%\VignetteDepends{}
+%\VignetteKeywords{totally ordered observations, irregular time series, S3, R}
+%\VignettePackage{PPsepctra}
+
+
+<<preliminaries,echo=FALSE,results=hide>>=
+## library("zoo")
+## library("tseries")
+## library("strucchange")
+## library("timeDate")
+## online <- FALSE ## if set to FALSE the local copy of MSFT.rda
+##                 ## is used instead of get.hist.quote()
+options(prompt = "R> ")
+Sys.setenv(TZ = "GMT")
+suppressWarnings(RNGversion("3.5.0"))
+@
+
+
+
+\section{Introduction}
+We  consider the question of analysing a point process (a collection of ``times'') in the frequency domain.
+We note that:
+\begin{itemize}
+\item there are many excellent packages in R \cite[]{r.2013}, for the time domain analysis of point processes. There
+  appears to be a dearth of software for the frequency analysis of point processes;
+\item the choice to model the data as a ``spike train'' may be more natural in some settings than others.  The
+  term ``spike train'' comes from the neuroscience literature.  \cite{Eden.2019,Pouzat.and.Chaffiol.2009} model the firing
+  times of neurons as a point process that is then analysed as a ``spike train'' where each event is an electrical
+  pulse, a signal of zero time duration with some particular mathematical properties. 
+\end{itemize}
+
+The frequency domain has several advantages in that subtle structure can be detected which may be difficult to observe
+in the time domain. Secondly, the time domain estimators can have problems with sensitivity to weak non-stationarity.
+\cite{Jarvis.and.Mitra.2001} is a key reference in this area. As they comment, most of the literature is targeted at
+either spectral analysis of continuous processes or at the analysis of point processes in the time domain.
+
+We could find no package in R that explicitly offered the calculation of an energy spectra for a point process.  The
+Chronux Matlab package \cite[]{Mitra.and.Bokil.2007,chronux}, offered this so we have taken a small number of functions
+and coded them in R. We have kept the same names ( \texttt{mtspectrumpt} and \texttt{coherencypt}) for uses familiar
+with Chronux, but the calling parameters may have changed.
+
+
+
+
+  
+\section{point processes, and Dirac $\delta$ ``functions''}
+As \cite{Brillinger.1994} says ``A time series $Y$ is a wiggly line $Y(t), -\infty < t < \infty$. A point process $N$ is a collection of times
+$\{\tau_j, j = 0, \pm 1,\pm 2, \ldots\}$. (It will be assumed that the $\tau_j$ are distinct.) A marked point process
+$J$ is a collection of times and associated quantities (marks) $\{(\tau_j,M_j), j = 0, \pm 1,\pm 2, \ldots \}$.''
+
+So say we have a point process. This is just a collection of times and it can be
+specified in a number of ways as shown in figure \ref{figure:pp_representation.png}. $d\bar{N}(t)/dt$ is a series of delta functions.
+
+An electrical pulses is commonly analysed as a Dirac delta. The Dirac delta can be loosely thought of as a
+discontinuous function on the real line which is zero everywhere except at the origin, where it is undefined (or
+infinite, if you prefer);
+\[
+  \delta (x)={\begin{cases}\mathrm{ undefined } ,&x=0\\0,&x\neq 0.\end{cases}}
+  \]
+However, it has the property that, for some mild conditions on $f,$
+\[
+  \int _{-\infty }^{\infty }f(x)\,\delta(x) dx=f(0).
+\]
+The Dirac delta is a generalized function. No function in the traditional sense has this property.
+
+
+
+\begin{figure}[tbhp]
+  \centering
+  \includegraphics[width=\textwidth,totalheight=4.5cm]{./figs/pp_representation.png}
+  \caption{Several specifications for point process data. The counting process $N(t)$
+    is the number of spikes which occur up to time $t$,  $\bar{N}(t)= N(t) - \lambda t$, where $\lambda$ is the mean
+    rate. $d\bar{N}(t)/dt,$  is a series of delta functions. From \cite{Jarvis.and.Mitra.2001}.}
+  \label{figure:pp_representation.png}
+\end{figure}
+%http://www.stat.columbia.edu/~liam/teaching/neurostat-fall19/uri-eden-point-process-notes.pdf
+
+\FloatBarrier
+%\section{Fourier transform of a pulse or spike}
+%The above definition of energy spectral density is suitable for transients (pulse-like signals) whose energy is
+%concentrated around one time window; then the Fourier transforms of the signals generally exist. For continuous signals
+%over all time, such as stationary processes, one must rather define the power spectral density (PSD); this describes how
+%power of a signal or time series is distributed over frequency, as in the simple example given previously. Here, power
+%can be the actual physical power, or more often, for convenience with abstract signals, is simply identified with the
+%squared value of the signal. For example, statisticians study the variance of a function over time $x(t)$
+%\cite{wiki:Spectral_density}.
+%http://rundle.physics.ucdavis.edu/PHYGEO30/Fourier_Transforms.pdf
+
+
+\section{autocovariance, spectra and coherence}
+\begin{align*}
+%  \dfrac{E\{dN(t)\}}{dt} &= \lambda dt \\
+%  \intertext{and }
+%  \dfrac{E\{d\bar{N}(t)\}}{dt} &= 0.\\
+  \intertext{The autocovariance is a function that gives the covariance of the process with itself at pairs of time
+points. It is }
+  \mu (\tau ) +\lambda \delta(\tau) =& \dfrac{E [d\bar{N}(t) d\bar{N}(t + \tau )]}{dtd\tau}. \\
+  \intertext{The spectrum $S(f)$ is the Fourier transform of the autocovariance function}
+  S( f ) =& \lambda + \int_\infty^\infty \mu (\tau ) \exp(- 2\pi i f \tau )d\tau 
+\end{align*}
+
+We can extend these definitions to simultaneously recorded spike trains. The cross-covariance is a function that gives
+the covariance of one process with points on another process
+\begin{align*}
+  \mu_{ab} (\tau ) +\lambda_{ab} \delta_{ab}(\tau) =& \dfrac{E [d\bar{N}(t) d\bar{N}(t + \tau )]}{dtd\tau}. \\
+  \intertext{The cross-spectrum $S(f)$ is the Fourier transform of the cross-covariance function}
+  S_{ab}( f ) =& \lambda + \int_\infty^\infty \mu_{ab} (\tau ) \exp(- 2\pi i f \tau )d\tau  \\
+  \intertext{and the coherency is}
+  \gamma( f )  =& \dfrac{S_{ab}(f) }{ \sqrt{ S_{aa}(f) S_{bb}(f)}}.\\
+\end{align*}
+
+The spectrum is real and positive but the coherency is complex valued. The modulus of the
+coherency, which is known as the coherence, can only vary between zero and one. This makes coherence particularly
+attractive for detecting relationships between spike trains as it is insensitive to the mean spike rates.
+
+
+
+\section{Spectral Estimators}
+Taking our data to be $d\bar{N}(t)=x(t),$ say, we define the energy of the signal as
+\[
+   E=\int _{-\infty }^{\infty }|x(t)|^{2}\,dt.
+ \]
+An energy spectral density describes how the energy is distributed with frequency. 
+Parseval's theorem gives us an alternate expression for the energy of the signal:
+\[
+  \int _{-\infty }^{\infty }|x(t)|^{2}\,dt=\int _{-\infty }^{\infty }|{\hat {x}}(f)|^{2}\,df,
+  \]
+where
+\[
+  \hat {x}(f)=\int _{-\infty }^{\infty }e^{-2\pi ift}x(t)\,dt
+\]
+is the Fourier transform of the signal and
+$f$ is the frequency in Hz (cycles per second). Since the integral on the right-hand side is the energy of the signal, the integrand 
+$\left|{\hat {x}}(f)\right|^{2}$ can be interpreted as a density function describing the energy per unit frequency contained in the signal at 
+the frequency $f$. In light of this, the energy spectral density of a signal $x ( t )$ is defined as
+$S_{xx}(f)=\left|{\hat {x}}(f)\right|^{2}$. This is the Periodogram.
+
+
+\cite{Jarvis.and.Mitra.2001} warn that the periodigram is a seriously flawed estimator. A improved way to get a spectral estimator
+is the modulus squared of the Fourier transform of the data multiplied by an envelope function $h(t)$, known as a taper,
+such that
+\begin{align*}
+  \int_0^T h(t)^2 dt  = & 1.\\
+  \intertext{Then the estimator is}
+  S_{xx} = & \int_0^T h(t) \exp{\{-2\pi i f t\}} d \bar{N} (t)\\
+  =& \sum_{j=1}^{N(T)} h(t_j)  \exp{\{ -2\pi i f t_j\}} -\dfrac{N(T)H(f)}{T}
+\intertext{where $H(f)$ is the Fourier transform of the taper. $N(T)/T$ is an estimate of the population parameter $\lambda.$}     
+\end{align*}
+The basic idea of multitaper spectral estimation is to average the spectral estimates from several orthogonal tapers.
+
+\section{Example 1}
+The assumption of the Fourier transform is that all signals can be expressed as a sum of periodic (specifically
+sinusoidal) components with varying amplitude and phase.  If a non-periodic signal is defined over a finite time span,
+it can be considered to be one part of a periodic signal and we can take its Fourier transform.
+
+Sampling in the time domain has a close relationship to frequency in the spectral domain. 
+The frequency resolution is defined as Fs/N, where Fs is sample frequency, N is number of data points. For
+example, if the sample frequency is 1000 Hz and the number of data points is 1000, then the
+frequency resolution is equal to 1000 Hz/1000 = 1 Hz.
+
+The code for generating hpp.event.times relies on the \texttt{rexp} function
+which generates 64 bit floating point numbers (like all of Rs computations).
+This means the the smallest interval that can be measured is  \texttt{.Machine\$double.eps=  2.2e-16},
+and we we have about $10^{15}$ points in the interval $[0,1]$.
+
+The resolution of the data (provided it is small enough) does not adversely affect computations in the time domain. However in the frequency domain
+this becomes very important.
+
+
+
+\begin{lstlisting}[caption=Example 1., label=listing1]
+#300 events per second -- \lambda -- the rate
+#want 300 events -- so will run until we get 300 
+aa1<-hpp.event.times(rate=300, 300, num.sims = 1, t0 = 0)
+aa1<-round(aa1,4)
+aa1<-aa1[aa1< 1.0]
+aa1<-unique(aa1)
+
+
+#I am setting the sampling frequence to 600. That is, the signal is sampled 600 times a second.
+# this has to be high enough that the time difference beteen spikes in aa1 is greater than the sampling intervale
+S1<-mtspectrumpt(aa1, Fs  =   1000)
+plot(S1$f, S1$S,type="l",col="red")
+S1<-mtspectrumpt(aa1, Fs  =   600)
+lines(S1$f, S1$S,type="l",col="blue")
+S1<-mtspectrumpt(aa1, Fs  =   300)
+lines(S1$f, S1$S,type="l",col="green")
+\end{lstlisting}
+
+\section{Example 2}
+X-linked severe combined immunodeficiency (SCID-X1) is an inherited disease caused by inactivating mutations in the gene
+encoding the interleukin 2 receptor common gamma chain (IL2RG), which is located on the X-chromosome.
+SCID-X1 gene therapy clinical trials were conducted in Paris and London. The clinical results differed and the
+question was raised of the effect of different transduction conditions on transduced cells.  Human peripheral blood (PB)
+CD34+ cells were transduced with $\gamma$-retroviral vectors according to the transduction protocols employed in the
+initial clinical trials.  14 Cells cultured under London trial conditions showed relatively higher retention of CD34
+expression at the completion of the transduction period, compared to a loss of CD34-positivity in about half the cells
+transduced under the Paris trial conditions. Paris conditions, on the other hand, promoted higher levels of both
+proliferation and transduction, see \cite{Hallwirth.et.al.2015}.
+
+
+
+\begin{lstlisting}[caption=Example 2., label=listing2]
+data(integrationSites)
+Paris<-integrationSites$Paris
+Paris<-as.vector(as.matrix(Paris))
+Paris<-Paris/1e+09
+London<-integrationSites$London
+London<-as.vector(as.matrix(London))
+London<-London/1e+09
+
+system.time(S.Paris<-mtspectrumpt(Paris, Fs  =   1000))
+#  user  system elapsed 
+#294.788  49.709 210.565
+plot(S.Paris$f, S.Paris$S)
+
+system.time(C12<-coherencypt(Paris,London,Fs  =   500))
+#user  system elapsed 
+#369.944  81.602 294.154 
+plot(C12$f,C12$C12,ylim=c(0.8,1),type="l")
+\end{lstlisting}
+
+
+
+\section{Chronux}
+Chronux is an open-source software package being developed for the analysis of neural data. It is a collaborative
+research effort based at the Mitra Lab in Cold Spring Harbor Laboratory that has grown out of the work of several
+groups. Chronux routines may be employed in the analysis of both point process and continuous data, ranging from
+preprocessing, exploratory and confirmatory analysis. Chronux is currently implemented as a Matlab toolbox.
+
+The Chronux website at http://chronux.org/ is the central location for information about the current and all previous
+releases of Chronux. The home page contains links to pages for downloads, people, recent news, tutorials, various files,
+documentation and our discussion forum. There are also Google groups for Chronux discussion and Chronux announcements
+which you can join.  See also "Observed Brain Dynamics", Partha Mitra and Hemant Bokil, Oxford University Press, New York, 2008.
+
+Chronux is an open source project released under the GNU Public License GPL v2.
+
+
+\nocite{Eden.2019}
+\nocite{Baddeley.and.Turner.2005}
+\nocite{Cohen.2014}
+\nocite{Hallwirth.et.al.2015}
+\nocite{Pouzat.and.Chaffiol.2009}
+\nocite{Peng.2007}
+\nocite{hartePtProcessPackageModelling2010}
+\nocite{cebrianNHPoissonPackageFitting2015}
+
+\bibliographystyle{apalike}
+
+
+
+\bibliography{./integration_sites}
 \end{document}
+
+

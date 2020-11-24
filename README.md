@@ -22,5 +22,8 @@ with Chronux, but the calling parameters may have changed.
 
 ```
 library(devtools)
-devtools::install_github("parsifal9/PPspectra", build_vignettes = TRUE)
+devtools::install_github("parsifal9/PPspectra", build_vignettes = FALSE)
 ```
+
+This should install the package. The  "build_vignettes = FALSE" is because building the vignette causes an error at the moment
+(the figures are not found).
